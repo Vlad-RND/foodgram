@@ -81,8 +81,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Функция для получения файла со списком покупок."""
-        responce = HttpResponse(content_type='text/plain')
-        responce['Content-Disposition'] = 'attachment; filename=shopping_list.txt'
+        resp = HttpResponse(content_type='text/plain')
+        resp['Content-Disposition'] = 'attachment; filename=shopping_list.txt'
 
         data = {}
         for list in ShoppingList.objects.filter(customer=request.user):
@@ -94,9 +94,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     data[ingredient] = item.amount
 
         for key, value in data.items():
-            responce.writelines(f'{key}: {value}\n')
+            resp.writelines(f'{key}: {value}\n')
 
-        return responce
+        return resp
 
 
 class SubscriptionViewSet(PermissionMixin):
