@@ -70,7 +70,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend/
-        npm install
+        npm install --package-lock-only --legacy-peer-deps
         npm ci
 
     - name: Test frontend
