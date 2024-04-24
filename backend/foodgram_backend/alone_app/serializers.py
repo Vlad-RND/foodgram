@@ -186,7 +186,7 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 )
             if ingredient['amount'] < 1:
                 raise serializers.ValidationError(
-                    {'amount': 'Убедитесь, что это значение больше либо равно 1.'}
+                    {'amount': 'Убедитесь, что значение больше либо равно 1.'}
                 )
             if ingredient['id'] in ingredient_list:
                 raise serializers.ValidationError(

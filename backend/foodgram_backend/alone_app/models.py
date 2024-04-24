@@ -1,9 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.core.validators import RegexValidator
 
-from .constants import (SHORT_NAME_LEN, TITLE_STR_LIMIT,
-                        NAME_STR_LIMIT, EMAIL_LIMIT, COLOR_HEX_LIMIT)
+from .constants import (COLOR_HEX_LIMIT, EMAIL_LIMIT,
+                        SHORT_NAME_LEN, TITLE_STR_LIMIT,
+                        NAME_STR_LIMIT)
 
 
 class NameModel(models.Model):

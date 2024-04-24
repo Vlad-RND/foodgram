@@ -1,21 +1,20 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import viewsets, status
-from rest_framework import mixins
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
 
+from .filterset import RecipeFilter
 from .models import (Tag, Ingredient, Recipe, FoodgramUser,
                      Subscription, Favorites, ShoppingList,
                      IngredientRecipe)
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (TagSerializer, IngredientSerializer,
                           CreateRecipeSerializer, SubscriptionSerializer,
                           ShowRecipeSerializer, FavoritesSerializer,
                           ShoppingListSerializer)
-from .permissions import IsAuthorOrReadOnly
-from .filterset import RecipeFilter
 
 
 class PermissionMixin(mixins.CreateModelMixin, mixins.ListModelMixin,
