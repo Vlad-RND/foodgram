@@ -116,8 +116,8 @@ class Recipe(NameModel):
     )
     image = models.ImageField(
         'Изображение',
-        # upload_to='alone_app/images/',
-        upload_to='media',
+        upload_to='alone_app/images/',
+        # upload_to='/',
     )
     text = models.TextField('Описание',)
     cooking_time = models.IntegerField('Время приготовления, мин',)

@@ -3,6 +3,7 @@ version: '3'
 volumes:
   foodgram_data_production:
   static_volume:
+  media:
 
 
 services:
@@ -14,8 +15,11 @@ services:
   backend:
     image: vladrnd/foodgram_backend
     env_file: .env
+    depends_on:
+      - db
     volumes:
       - static_volume:/backend_static
+      - media:/media
   frontend:
     image: vladrnd/foodgram_frontend
     env_file: .env
@@ -25,7 +29,10 @@ services:
   gateway:
     image: vladrnd/foodgram_gateway
     env_file: .env
+    depends_on:
+      - backend
     volumes:
       - static_volume:/staticfiles/
+      - media:/media
     ports:
       - 8000:80
