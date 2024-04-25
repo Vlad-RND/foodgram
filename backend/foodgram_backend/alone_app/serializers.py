@@ -294,13 +294,10 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
 
         for ingredient in ingredients:
             ingredient_recipe, status = IngredientRecipe.objects.get_or_create(
-                # ingredient=ingredient['id'],
                 ingredient=Ingredient(pk=ingredient['id']),
-                # recipe=instance.id
                 recipe=instance,
                 amount=ingredient['amount']
             )
-            # ingredient_recipe.amount = ingredient['amount']
             ingredient_recipe.save()
 
         list_tags = []
