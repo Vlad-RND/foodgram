@@ -294,8 +294,8 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
 
         for ingredient in ingredients:
             ingredient_recipe, status = IngredientRecipe.objects.get_or_create(
-                ingredient=ingredient['id'],
-                # ingredient=Ingredient(pk=ingredient['id']),
+                # ingredient=ingredient['id'],
+                ingredient=Ingredient(pk=ingredient['id']),
                 recipe=instance.id
             )
             ingredient_recipe.amount = ingredient['amount']
