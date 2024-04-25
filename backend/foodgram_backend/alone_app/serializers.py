@@ -307,8 +307,8 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
             ingredient_recipes, stat = IngredientRecipe.objects.get_or_create(
                 ingredient=Ingredient(pk=ingredient['id']),
                 recipe=instance,
-                amount=ingredient['amount']
             )
+            ingredient_recipes.amount = ingredient['amount']
             ingredient_recipes.save()
 
         list_tags = []
