@@ -14,4 +14,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(options['csv_file'], encoding='utf-8') as file:
             for row in csv.reader(file):
-                Ingredient.objects.create(name=row[0], measurement_unit=row[1])
+                Ingredient.objects.get_or_create(
+                    name=row[0], measurement_unit=row[1]
+                )
