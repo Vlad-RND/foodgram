@@ -355,7 +355,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
             recipes = []
             # for recipe in Recipe.objects.filter(author=current_user.id):
-            for recipe in Recipe.objects.filter(author=subscription.follow_user):
+            for recipe in Recipe.objects.filter(
+                author=subscription.follow_user
+            ):
                 recipes.append(ShortRecipeSerializer(instance=recipe).data)
 
             data['recipes'] = recipes
