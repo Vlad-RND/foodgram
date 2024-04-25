@@ -303,14 +303,14 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                     recipe=instance
                 )
                 current_ingredient.amount = ingredient['amount']
-                ingredient_list.append(current_ingredient)
+                ingredient_list.append(current_ingredient.id)
             else:
                 current_ingredient = IngredientRecipe.objects.create(
                     ingredient=Ingredient(pk=ingredient['id']),
                     recipe=instance,
                     amount=ingredient['amount']
                 )
-                ingredient_list.append(current_ingredient)
+                ingredient_list.append(current_ingredient.id)
 
         instance.ingredients.set(ingredient_list)
 
