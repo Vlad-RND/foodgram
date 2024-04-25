@@ -303,15 +303,6 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
             ]
         )
 
-        # for ingredient in ingredients:
-        #     ingredient_recipe, status =
-        # IngredientRecipe.objects.get_or_create(
-        #         ingredient=Ingredient(pk=ingredient['id']),
-        #         recipe=instance,
-        #         amount=ingredient['amount']
-        #     )
-        #     ingredient_recipe.save()
-
         list_tags = []
         for tag in tags:
             list_tags.append(Tag.objects.get(pk=tag))
