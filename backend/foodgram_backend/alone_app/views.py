@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import LimitOffsetPagination
@@ -43,6 +43,8 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     http_method_names = ['get',]
     pagination_class = None
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name',]
 
 
 class IngredientViewSet(viewsets.ModelViewSet):

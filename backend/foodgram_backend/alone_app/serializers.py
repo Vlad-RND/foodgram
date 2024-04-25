@@ -297,9 +297,10 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 # ingredient=ingredient['id'],
                 ingredient=Ingredient(pk=ingredient['id']),
                 # recipe=instance.id
-                recipe=instance
+                recipe=instance,
+                amount=ingredient['amount']
             )
-            ingredient_recipe.amount = ingredient['amount']
+            # ingredient_recipe.amount = ingredient['amount']
             ingredient_recipe.save()
 
         list_tags = []
