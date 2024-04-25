@@ -107,8 +107,8 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         return obj.amount
 
     def get_name(self, obj):
-        # return Ingredient.objects.get(name=obj.ingredient).name
-        return Ingredient.objects.get(name=obj.ingredient)
+        return Ingredient.objects.get(name=obj.ingredient).name
+        # return Ingredient.objects.get(name=obj.ingredient)
 
     def get_measurement_unit(self, obj):
         return Ingredient.objects.get(name=obj.ingredient).measurement_unit
