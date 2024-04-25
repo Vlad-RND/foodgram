@@ -19,7 +19,7 @@ services:
       - db
     volumes:
       - static:/backend_static
-      - media:/media
+      - media:/app/media/
   frontend:
     env_file: .env
     image: vladrnd/foodgram_frontend
@@ -35,4 +35,4 @@ services:
       - 8080:80
     volumes:
       - static:/static
-      - media:/media
+      - media:/app/media/
