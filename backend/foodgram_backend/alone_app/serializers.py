@@ -294,7 +294,8 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
 
         for ingredient in ingredients:
             ingredient_recipe, status = IngredientRecipe.objects.get_or_create(
-                ingredient=ingredient['id'],
+                ingredient=ingredient,
+                # ingredient=Ingredient(pk=ingredient['id']),
                 recipe=instance.id
             )
             ingredient_recipe.amount = ingredient['amount']
@@ -353,7 +354,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             ).exists()
 
             recipes = []
-            for recipe in Recipe.objects.filter(author=current_user.id):
+            # for recipe in Recipe.objects.filter(author=current_user.id):
+            for recipe in Recipe.objects.filter(author=subscription.follow_user):
                 recipes.append(ShortRecipeSerializer(instance=recipe).data)
 
             data['recipes'] = recipes
