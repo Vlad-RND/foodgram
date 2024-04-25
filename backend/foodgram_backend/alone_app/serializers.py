@@ -277,7 +277,7 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
             IngredientRecipe.objects.create(
                 ingredient=Ingredient.objects.get(pk=ingredient['id']),
                 recipe=recipe,
-                amount=ingredient['amount']
+                amount=int(ingredient['amount'])
             )
         return recipe
 
