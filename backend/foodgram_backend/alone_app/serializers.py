@@ -293,7 +293,6 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         tags = validated_data.pop('tags')
 
         IngredientRecipe.objects.filter(recipe=instance).all().delete()
-
         IngredientRecipe.objects.bulk_create(
             [
                 IngredientRecipe(
