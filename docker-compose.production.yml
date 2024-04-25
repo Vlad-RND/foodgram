@@ -14,9 +14,7 @@ services:
       - foodgram_data_production:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: ../backend/foodgram_backend
-      dockerfile: Dockerfile
+    image: vladrnd/foodgram_backend
     env_file:
       - .env
     volumes:
