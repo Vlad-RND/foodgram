@@ -184,10 +184,11 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 raise serializers.ValidationError(
                     {'ingredients': 'Такого ингридиента не существует'}
                 )
-            if not ingredient['amount'].isdigit():
-                raise serializers.ValidationError(
-                    {'amount': 'Убедитесь, что значение - число.'}
-                )
+            if not isinstance(ingredient['amount'], int):
+                if not ingredient['amount'].isdigit():
+                    raise serializers.ValidationError(
+                        {'amount': 'Убедитесь, что значение - число.'}
+                    )
             if int(ingredient['amount']) < 1:
                 raise serializers.ValidationError(
                     {'amount': 'Убедитесь, что значение больше либо равно 1.'}
