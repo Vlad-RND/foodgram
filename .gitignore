@@ -131,4 +131,6 @@ dmypy.json
 
 # .idea
 .idea
+
 docker-compose.yml
+data/
