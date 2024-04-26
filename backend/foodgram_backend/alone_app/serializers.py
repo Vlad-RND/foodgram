@@ -293,24 +293,13 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
 
-        # IngredientRecipe.objects.filter(recipe=instance).all().delete()
-        # IngredientRecipe.objects.bulk_create(
-        #     [
-        #         IngredientRecipe(
-        #             recipe=instance,
-        #             ingredient=Ingredient.objects.get(pk=ingredient['id']),
-        #             amount=ingredient['amount'],
-        #         ) for ingredient in ingredients
-        #     ]
-        # )
-
         for ingredient in ingredients:
-            ingredient_recipes, stat = IngredientRecipe.objects.get_or_create(
-                ingredient=Ingredient(pk=ingredient['id']),
-                recipe=instance,
-            )
-            ingredient_recipes.amount = ingredient['amount']
-            ingredient_recipes.save()
+            if 'name' in ingredient:
+                IngredientRecipe.objects.create(
+                    ingredient=ingredient['id'],
+                    recipe=instance,
+                    amount=ingredient['amount']
+                ).save()
 
         list_tags = []
         for tag in tags:

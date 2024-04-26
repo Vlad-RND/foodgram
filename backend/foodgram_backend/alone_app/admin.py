@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
-from .models import Tag, Ingredient, Recipe, FoodgramUser
+from .models import Tag, Ingredient, Recipe, FoodgramUser, Favorites
 
 
 class TagInline(admin.StackedInline):
@@ -45,8 +45,13 @@ class Recipe(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
+        'favorites'
     )
     list_filter = ('author', 'tags',)
+
+    def favorites(self, obj):
+        '''Получения количества добавлений в избранное.'''
+        return Favorites.objects.filter(recipe=obj).count()
 
 
 @admin.register(Ingredient)
