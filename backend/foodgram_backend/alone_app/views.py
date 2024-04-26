@@ -52,8 +52,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     http_method_names = ['get',]
     pagination_class = None
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_fields = ('name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
