@@ -159,8 +159,9 @@ class ShowRecipeSerializer(CommonRecipeSerializer):
 class CreateRecipeSerializer(CommonRecipeSerializer):
     """Сериализатор создания модели Recipe."""
 
-    tags = serializers.ListField(write_only=True)
-    ingredients = serializers.ListField(write_only=True)
+    tags = serializers.ListField(write_only=True, min_length=1)
+    ingredients = serializers.ListField(write_only=True, min_length=1)
+    cooking_time = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = Recipe
@@ -171,25 +172,17 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         read_only_fields = ('author',)
 
     def validate(self, data):
-        if 'ingredients' not in data:
+        if 'ingredients' not in data or 'tags' not in data:
             raise serializers.ValidationError(
-                {'ingredients': 'Отсутствует список ингредиентов.'}
+                {'ditail': 'Отсутствует список ингредиентов или.'}
             )
-        elif not data['ingredients']:
-            raise serializers.ValidationError(
-                {'ingredients': 'Отсутствует список ингредиентов.'}
-            )
+
         ingredient_list = []
         for ingredient in data['ingredients']:
             if not Ingredient.objects.filter(id=ingredient['id']).exists():
                 raise serializers.ValidationError(
                     {'ingredients': 'Такого ингридиента не существует'}
                 )
-            if not isinstance(ingredient['amount'], int):
-                if not ingredient['amount'].isdigit():
-                    raise serializers.ValidationError(
-                        {'amount': 'Убедитесь, что значение - число.'}
-                    )
             if int(ingredient['amount']) < 1:
                 raise serializers.ValidationError(
                     {'amount': 'Убедитесь, что значение больше либо равно 1.'}
@@ -200,15 +193,6 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 )
             else:
                 ingredient_list.append(ingredient['id'])
-
-        if 'tags' not in data:
-            raise serializers.ValidationError(
-                {'tags': 'Отсутствует список тегов.'}
-            )
-        elif not data['tags']:
-            raise serializers.ValidationError(
-                {'tags': 'Отсутствует список тегов.'}
-            )
 
         tag_list = []
         for tag in data['tags']:
@@ -222,12 +206,6 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 )
             else:
                 tag_list.append(tag)
-
-            if data['cooking_time'] < 1:
-                raise serializers.ValidationError(
-                    {'cooking_time': 'Не может быть меньше 1.'}
-                )
-
         return super().validate(data)
 
     def to_representation(self, instance):
@@ -282,32 +260,32 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
             )
         return recipe
 
-    def update(self, instance, validated_data):
-        instance.image = validated_data.get('image', instance.image)
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time',
-            instance.cooking_time
-        )
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-
+    def ingredients_recipe(self, ingredients, recipe):
         for ingredient in ingredients:
-            if 'name' in ingredient:
-                IngredientRecipe.objects.create(
-                    ingredient=ingredient['id'],
-                    recipe=instance,
-                    amount=ingredient['amount']
-                ).save()
+            current_ingredient = Ingredient.objects.get(
+                pk=ingredient['id']
+            )
+            IngredientRecipe.objects.create(
+                ingredient=current_ingredient,
+                recipe=recipe,
+                amount=ingredient['amount']
+            )
 
-        list_tags = []
-        for tag in tags:
-            list_tags.append(Tag.objects.get(pk=tag))
-
-        instance.tags.set(list_tags)
-        instance.save()
-        return instance
+    def update(self, recipe, validated_data):
+        recipe.name = validated_data.get('name', recipe.name)
+        recipe.text = validated_data.get('text', recipe.text)
+        recipe.cooking_time = validated_data.get('cooking_time',
+                                                 recipe.cooking_time)
+        recipe.image = validated_data.get('image', recipe.image)
+        if 'ingredients' in self.initial_data:
+            ingredients = validated_data.pop('ingredients')
+            recipe.ingredients.clear()
+            self.ingredients_recipe(ingredients, recipe)
+        if 'tags' in self.initial_data:
+            tags_data = validated_data.pop('tags')
+            recipe.tags.set(tags_data)
+        recipe.save()
+        return recipe
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
