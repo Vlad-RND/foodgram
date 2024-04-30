@@ -1,6 +1,7 @@
 import base64
 import webcolors
 
+from django.db import transaction
 from django.core.files.base import ContentFile
 from rest_framework import exceptions, serializers
 
@@ -271,21 +272,25 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 amount=ingredient['amount']
             )
 
-    def update(self, recipe, validated_data):
-        recipe.name = validated_data.get('name', recipe.name)
-        recipe.text = validated_data.get('text', recipe.text)
-        recipe.cooking_time = validated_data.get('cooking_time',
-                                                 recipe.cooking_time)
-        recipe.image = validated_data.get('image', recipe.image)
-        if 'ingredients' in self.initial_data:
-            ingredients = validated_data.pop('ingredients')
-            recipe.ingredients.clear()
-            self.ingredients_recipe(ingredients, recipe)
-        if 'tags' in self.initial_data:
-            tags_data = validated_data.pop('tags')
-            recipe.tags.set(tags_data)
-        recipe.save()
-        return recipe
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+
+        instance.tags.set(tags)
+        instance.image = validated_data.get('image', instance.image)
+
+        instance.ingredients.clear()
+        for ingredient in ingredients:
+            IngredientRecipe.objects.create(
+                recipe=instance, ingredient=ingredient['ingredient'],
+                amount=ingredient['amount']
+            ).save()
+
+        return super().update(instance, validated_data)
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
