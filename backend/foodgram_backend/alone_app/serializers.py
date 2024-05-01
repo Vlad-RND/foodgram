@@ -286,24 +286,31 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
                 amount=ingredient['amount']
             )
 
-    @transaction.atomic
+    # @transaction.atomic
+    # def update(self, instance, validated_data):
+    #     ingredients = validated_data.pop('ingredients')
+    #     tags = validated_data.pop('tags')
+
+    #     for field, value in validated_data.items():
+    #         setattr(instance, field, value)
+
+    #     instance.tags.set(tags)
+    #     instance.image = validated_data.get('image', instance.image)
+
+    #     instance.ingredients.clear()
+    #     for ingredient in ingredients:
+    #         IngredientRecipe.objects.create(
+    #             recipe=instance, ingredient=ingredient['ingredient'],
+    #             amount=ingredient['amount']
+    #         ).save()
+
+    #     return super().update(instance, validated_data)
+
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-
-        for field, value in validated_data.items():
-            setattr(instance, field, value)
-
-        instance.tags.set(tags)
-        instance.image = validated_data.get('image', instance.image)
-
+        instance.tags.clear()
         instance.ingredients.clear()
-        for ingredient in ingredients:
-            IngredientRecipe.objects.create(
-                recipe=instance, ingredient=ingredient['ingredient'],
-                amount=ingredient['amount']
-            ).save()
-
+        instance.tags.set(validated_data.pop('tags'))
+        self.create_ingredients(validated_data.pop('ingredients'), instance)
         return super().update(instance, validated_data)
 
 
