@@ -157,11 +157,25 @@ class ShowRecipeSerializer(CommonRecipeSerializer):
         ).exists()
 
 
+class AddIngredientRecipeSerializer(serializers.ModelSerializer):
+    """ Сериализатор добавления ингредиента в рецепт. """
+
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = IngredientRecipe
+        fields = [
+            'id',
+            'amount'
+        ]
+
+
 class CreateRecipeSerializer(CommonRecipeSerializer):
     """Сериализатор создания модели Recipe."""
 
     tags = serializers.ListField(write_only=True, min_length=1)
-    ingredients = serializers.ListField(write_only=True, min_length=1)
+    # ingredients = serializers.ListField(write_only=True, min_length=1)
+    ingredients = AddIngredientRecipeSerializer(many=True)
     cooking_time = serializers.IntegerField(min_value=1)
 
     class Meta:
