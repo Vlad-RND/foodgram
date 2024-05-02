@@ -134,4 +134,5 @@ dmypy.json
 
 docker-compose.yml
 infra/
+
 postman-collection/
