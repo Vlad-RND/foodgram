@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'rest_framework.authtoken',
-    'alone_app.apps.AloneAppConfig',
+    'api.apps.ApiAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -67,8 +67,6 @@ DATABASES = {
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', ''),
         'PORT': os.getenv('DB_PORT', 5432)
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -103,7 +101,7 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-AUTH_USER_MODEL = 'alone_app.FoodgramUser'
+AUTH_USER_MODEL = 'api.FoodgramUser'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -111,8 +109,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-    'EXCEPTION_HANDLER': 'utils.exception_handler.custom_exception_hendler',
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -122,9 +118,9 @@ REST_FRAMEWORK = {
 }
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'alone_app.serializers.FoodgramUserSerializer',
-        'current_user': 'alone_app.serializers.FoodgramUserSerializer',
-        'user_create': 'alone_app.serializers.FoodgramUserCreateSerializer',
+        'user': 'api.serializers.FoodgramUserSerializer',
+        'current_user': 'api.serializers.FoodgramUserSerializer',
+        'user_create': 'api.serializers.FoodgramUserCreateSerializer',
     },
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.AllowAny'],

@@ -4,10 +4,10 @@ from djoser.views import UserViewSet
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 
 
-from .filterset import RecipeFilter
+from .filterset import RecipeFilter, IngredientFilter
 from .models import (Tag, Ingredient, Recipe, FoodgramUser,
                      Subscription, Favorites, ShoppingList,
                      IngredientRecipe)
@@ -52,8 +52,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     http_method_names = ['get', ]
     pagination_class = None
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name',)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -61,7 +61,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
-    pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 

@@ -208,15 +208,23 @@ class Subscription(models.Model):
         FoodgramUser,
         on_delete=models.CASCADE,
         related_name='base_user',
-        verbose_name='Подписывающийся',
+        verbose_name='Пользователь',
     )
     follow_user = models.ForeignKey(
         FoodgramUser,
         related_name='follow_user',
         on_delete=models.CASCADE,
-        verbose_name='На кого подписаться',
+        verbose_name='Подписка',
         blank=True,
     )
+
+    class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'Подписки'
+        unique_together = (('base_user', 'follow_user'),)
+
+    def __str__(self):
+        return f'Подписка {self.base_user} на {self.follow_user}'
 
 
 class Favorites(models.Model):
@@ -235,6 +243,14 @@ class Favorites(models.Model):
         verbose_name='Рецепт',
     )
 
+    class Meta:
+        verbose_name = 'избранное'
+        verbose_name_plural = 'Избранные'
+        unique_together = (('user', 'recipe'),)
+
+    def __str__(self):
+        return f'Рецепт {self.recipe} в избранном у {self.user}'
+
 
 class ShoppingList(models.Model):
     """Модель списка покупок."""
@@ -251,3 +267,11 @@ class ShoppingList(models.Model):
         related_name='buy_recipe',
         verbose_name='Рецепт',
     )
+
+    class Meta:
+        verbose_name = 'список покупок'
+        verbose_name_plural = 'Списки покупок'
+        unique_together = (('customer', 'recipe'),)
+
+    def __str__(self):
+        return f'Рецепт {self.recipe} в списке покупок у {self.customer}'

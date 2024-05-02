@@ -3,7 +3,7 @@ import webcolors
 
 from django.db import transaction
 from django.core.files.base import ContentFile
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, serializers, pagination
 
 from .models import (Tag, Ingredient, Recipe, FoodgramUser,
                      IngredientRecipe, Subscription, TagRecipe,
@@ -47,8 +47,14 @@ class FoodgramUserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if 'request' in self.context:
-            if self.context['request'].user == instance:
+            current_user = self.context['request'].user
+            if current_user == instance:
                 data['is_subscribed'] = False
+            elif Subscription.objects.filter(
+                base_user=current_user.id,
+                follow_user=instance.id
+            ).exists():
+                data['is_subscribed'] = True
         return data
 
 
@@ -350,14 +356,20 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                 follow_user=subscription.follow_user
             ).exists()
 
-            recipes = []
-            for recipe in Recipe.objects.filter(
-                author=subscription.follow_user
-            ):
-                recipes.append(ShortRecipeSerializer(instance=recipe).data)
+        paginator = pagination.PageNumberPagination()
+        paginator.page_size = 3
+        current_recipes = Recipe.objects.filter(
+            author=subscription.follow_user
+        )
+        page = paginator.paginate_queryset(
+            current_recipes,
+            self.context['request']
+        )
+        serializer = ShortRecipeSerializer(page, many=True, context={
+            'request': self.context['request']})
 
-            data['recipes'] = recipes
-            data['recipes_count'] = len(recipes)
+        data['recipes'] = serializer.data
+        data['recipes_count'] = len(current_recipes)
 
         return data
 

@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.contrib.auth.admin import UserAdmin
 
-from .models import Tag, Ingredient, Recipe, FoodgramUser, Favorites
+from .models import (Tag, Ingredient, Recipe,
+                     FoodgramUser, Favorites, Subscription,
+                     ShoppingList)
 from .forms import RequiredInlineFormSet
 
 
@@ -27,7 +30,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 @admin.register(FoodgramUser)
-class FoodgramUser(admin.ModelAdmin):
+class FoodgramUser(UserAdmin):
     list_display = (
         'username',
         'email',
@@ -65,6 +68,36 @@ class Ingredient(admin.ModelAdmin):
     )
     search_fields = ('name',)
     list_filter = ('name', 'measurement_unit')
+
+
+@admin.register(Subscription)
+class Subscription(admin.ModelAdmin):
+    list_display = (
+        'base_user',
+        'follow_user',
+    )
+    search_fields = ('base_user',)
+    list_filter = ('base_user',)
+
+
+@admin.register(Favorites)
+class FavoritesAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'recipe',
+    )
+    search_fields = ('user',)
+    list_filter = ('user', 'recipe')
+
+
+@admin.register(ShoppingList)
+class ShoppingList(admin.ModelAdmin):
+    list_display = (
+        'customer',
+        'recipe',
+    )
+    search_fields = ('customer',)
+    list_filter = ('customer', 'recipe')
 
 
 admin.site.unregister(Group)
