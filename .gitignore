@@ -133,4 +133,5 @@ dmypy.json
 .idea
 
 docker-compose.yml
-data/
+.infra/
+.postman-collection/

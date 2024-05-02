@@ -2,16 +2,19 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 
 from .models import Tag, Ingredient, Recipe, FoodgramUser, Favorites
+from .forms import RequiredInlineFormSet
 
 
 class TagInline(admin.StackedInline):
     model = Tag.recipes.through
     extra = 1
+    formset = RequiredInlineFormSet
 
 
 class IngredientInline(admin.StackedInline):
     model = Ingredient.recipes.through
     extra = 1
+    formset = RequiredInlineFormSet
 
 
 @admin.register(Tag)

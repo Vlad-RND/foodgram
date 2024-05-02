@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 
 from .constants import (COLOR_HEX_LIMIT, EMAIL_LIMIT,
                         SHORT_NAME_LEN, TITLE_STR_LIMIT,
@@ -119,7 +119,10 @@ class Recipe(NameModel):
         upload_to='',
     )
     text = models.TextField('Описание',)
-    cooking_time = models.IntegerField('Время приготовления, мин',)
+    cooking_time = models.IntegerField(
+        'Время приготовления, мин',
+        validators=[MinValueValidator(1)],
+    )
     pub_date = models.DateTimeField(
         'Дата и время публикации',
         auto_now_add=True
@@ -163,6 +166,7 @@ class TagRecipe(models.Model):
     class Meta:
         verbose_name = 'тег рецепта'
         verbose_name_plural = 'Теги рецептов'
+        unique_together = (('tag', 'recipe'),)
 
     def __str__(self):
         return f'{self.tag} {self.recipe}'
@@ -183,11 +187,15 @@ class IngredientRecipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
-    amount = models.IntegerField('Количество')
+    amount = models.IntegerField(
+        'Количество',
+        validators=[MinValueValidator(1)],
+    )
 
     class Meta:
         verbose_name = 'ингридиент рецепта'
         verbose_name_plural = 'Ингридиенты рецептов'
+        unique_together = (('ingredient', 'recipe'),)
 
     def __str__(self):
         return f'{self.ingredient} {self.recipe}'
