@@ -230,37 +230,7 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         return super().validate(data)
 
     def to_representation(self, instance):
-        data = super().to_representation(instance)
-        current_tag_recipes = TagRecipe.objects.filter(recipe=instance.id)
-        current_ingredient_recipie = IngredientRecipe.objects.filter(
-            recipe=instance.id
-        )
-
-        tags_list = []
-        for i in current_tag_recipes:
-            tags_list.append(
-                TagSerializer(
-                    instance=Tag.objects.get(name=i.tag)
-                ).data
-            )
-
-        ingredients_list = []
-        for i in current_ingredient_recipie:
-            ingredient = Ingredient.objects.get(name=i.ingredient)
-            ingredients_list.append(
-                {
-                    'id': ingredient.id,
-                    'name': ingredient.name,
-                    'measurement_unit': ingredient.measurement_unit,
-                    'amount': i.amount
-                }
-            )
-
-        data['ingredients'] = ingredients_list
-        data['tags'] = tags_list
-        data['is_favorited'] = False
-        data['is_in_shopping_cart'] = False
-        return data
+        return ShowRecipeSerializer(instance, context=self.context).data
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
