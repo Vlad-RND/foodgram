@@ -141,7 +141,7 @@ class Recipe(NameModel):
         default_related_name = 'recipes'
         constraints = [
             models.UniqueConstraint(
-                fields=['name',],
+                fields=['name', ],
                 name='unique_name'
             )
         ]
