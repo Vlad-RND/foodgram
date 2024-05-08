@@ -1,23 +1,17 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
+from django.utils.safestring import mark_safe
 
 from .models import (Tag, Ingredient, Recipe,
                      FoodgramUser, Favorites, Subscription,
                      ShoppingList)
-from .forms import RequiredInlineFormSet
-
-
-class TagInline(admin.StackedInline):
-    model = Tag.recipes.through
-    extra = 1
-    formset = RequiredInlineFormSet
 
 
 class IngredientInline(admin.StackedInline):
     model = Ingredient.recipes.through
     extra = 1
-    formset = RequiredInlineFormSet
+    min_num = 1
 
 
 @admin.register(Tag)
@@ -25,39 +19,73 @@ class TagAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'slug',
+        'id',
     )
     search_fields = ('name',)
 
 
 @admin.register(FoodgramUser)
-class FoodgramUser(UserAdmin):
+class FoodgramUserAdmin(UserAdmin):
     list_display = (
         'username',
         'email',
         'first_name',
         'last_name',
-        'is_superuser'
+        'is_superuser',
+        'id',
+        'recipies',
+        'followers',
     )
     search_fields = ('username', 'email',)
     list_filter = ('first_name', 'email',)
+
+    @admin.display(
+        description='Кол-во рецептов',
+    )
+    def recipies(self, obj):
+        return obj.recipes.count()
+
+    @admin.display(
+        description='Кол-во подписчиков',
+    )
+    def followers(self, obj):
+        return obj.author.count()
 
 
 @admin.register(Recipe)
 class Recipe(admin.ModelAdmin):
     inlines = (
-        TagInline,
         IngredientInline,
     )
     list_display = (
         'name',
         'author',
-        'favorites'
+        'favorites',
+        'ingredient',
     )
     list_filter = ('author', 'tags',)
 
+    @admin.display(
+        description='В избранном',
+    )
     def favorites(self, obj):
-        '''Получения количества добавлений в избранное.'''
-        return Favorites.objects.filter(recipe=obj).count()
+        """Получения количества добавлений в избранное."""
+        return obj.favorites.count()
+
+    @admin.display(
+        description='Ингредиенты',
+    )
+    def ingredient(self, obj):
+        result = ''
+        for i in obj.ingredient_recipe.all():
+            result += f'{i.ingredient.name} {i.amount} ' \
+                      f'{i.ingredient.measurement_unit}, '
+        return result[:-2]
+
+    def image(self, obj):
+        return mark_safe(
+            f'<img src={obj.image.url} width="80" height="60">'
+        )
 
 
 @admin.register(Ingredient)
@@ -65,6 +93,7 @@ class Ingredient(admin.ModelAdmin):
     list_display = (
         'name',
         'measurement_unit',
+        'id',
     )
     search_fields = ('name',)
     list_filter = ('name', 'measurement_unit')
@@ -73,11 +102,11 @@ class Ingredient(admin.ModelAdmin):
 @admin.register(Subscription)
 class Subscription(admin.ModelAdmin):
     list_display = (
-        'base_user',
-        'follow_user',
+        'follower',
+        'author',
     )
-    search_fields = ('base_user',)
-    list_filter = ('base_user',)
+    search_fields = ('follower',)
+    list_filter = ('follower',)
 
 
 @admin.register(Favorites)
@@ -93,11 +122,11 @@ class FavoritesAdmin(admin.ModelAdmin):
 @admin.register(ShoppingList)
 class ShoppingList(admin.ModelAdmin):
     list_display = (
-        'customer',
+        'user',
         'recipe',
     )
-    search_fields = ('customer',)
-    list_filter = ('customer', 'recipe')
+    search_fields = ('user',)
+    list_filter = ('user', 'recipe')
 
 
 admin.site.unregister(Group)

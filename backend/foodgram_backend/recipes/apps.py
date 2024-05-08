@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class ApiAppConfig(AppConfig):
+class RecipesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'api'
-    verbose_name = 'Api Фудграм'
+    name = 'recipes'
+    verbose_name = 'Рецепты'
