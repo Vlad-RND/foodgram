@@ -38,7 +38,9 @@ class FoodgramUserViewSet(UserViewSet):
         return self.get_paginated_response(
             GetSubscriptionSerializer(
                 self.paginate_queryset(
-                    FoodgramUser.objects.all().annotate(
+                    FoodgramUser.objects.filter(
+                        author__follower=request.user
+                    ).annotate(
                         recipes_count=Count('recipes')
                     )
                 ),
