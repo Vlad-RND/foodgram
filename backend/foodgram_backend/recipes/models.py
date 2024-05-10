@@ -26,7 +26,7 @@ class NameModel(models.Model):
 class FoodgramUser(AbstractUser):
     """Расширенная модель пользователя."""
 
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
     USERNAME_FIELD = 'email'
     username = models.CharField(
         max_length=NAME_STR_LIMIT,
@@ -93,7 +93,7 @@ class Ingredient(NameModel):
 
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'measurement_unit'],
+                fields=('name', 'measurement_unit'),
                 name='unique_ingredient'
             )
         ]
@@ -141,7 +141,7 @@ class Recipe(NameModel):
         default_related_name = 'recipes'
         constraints = [
             models.UniqueConstraint(
-                fields=['name', ],
+                fields=('name', ),
                 name='unique_name'
             )
         ]
@@ -165,7 +165,7 @@ class IngredientRecipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         'Количество',
         validators=(
             MinValueValidator(MIN_VALUE, message=f'Минимум - {MIN_VALUE}.'),
@@ -178,7 +178,7 @@ class IngredientRecipe(models.Model):
         verbose_name_plural = 'Ингридиенты рецептов'
         constraints = [
             models.UniqueConstraint(
-                fields=['ingredient', 'recipe'],
+                fields=('ingredient', 'recipe'),
                 name='unique_ingredient_recipe'
             )
         ]
@@ -209,7 +209,7 @@ class Subscription(models.Model):
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=['follower', 'author'],
+                fields=('follower', 'author'),
                 name='unique_subscription'
             )
         ]
@@ -217,6 +217,7 @@ class Subscription(models.Model):
     def clean(self):
         if self.follower == self.author:
             raise ValidationError("Нельзя подписываться на самого себя.")
+        super().save(self)
 
     def __str__(self):
         return f'Подписка {self.follower} на {self.author}'
@@ -240,6 +241,10 @@ class UserRecipeModel(models.Model):
         abstract = True
         ordering = ('user',)
 
+    def __str__(self):
+        return (f'Рецепт {self.recipe} в '
+                f'{self._meta.verbose_name} у {self.user}')
+
 
 class Favorites(UserRecipeModel):
     """Модель списка избранного."""
@@ -250,13 +255,10 @@ class Favorites(UserRecipeModel):
         default_related_name = 'favorites'
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 name='unique_favorites'
             )
         ]
-
-    def __str__(self):
-        return f'Рецепт {self.recipe} в избранном у {self.user}'
 
 
 class ShoppingList(UserRecipeModel):
@@ -268,10 +270,7 @@ class ShoppingList(UserRecipeModel):
         default_related_name = 'shopping_list'
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
                 name='unique_shopping_list'
             )
         ]
-
-    def __str__(self):
-        return f'Рецепт {self.recipe} в списке покупок у {self.user}'

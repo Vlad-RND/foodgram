@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for model in data.keys():
             model_name = model.__name__
-            print(f'Началась загрузка модели {model_name}.')
+            self.stdout.write(f'Началась загрузка модели {model_name}.')
             try:
                 with open(data[model], encoding='utf-8') as file:
                     for row in csv.reader(file):
@@ -32,6 +32,8 @@ class Command(BaseCommand):
                                 name=name, measurement_unit=measurement_unit
                             )
             except FileNotFoundError:
-                print(f"Запрашиваемый файл {data[model]} не найден")
+                self.stdout.write(
+                    f"Запрашиваемый файл {data[model]} не найден"
+                )
 
-            print(f'Загрузка модели {model_name} завершена.')
+            self.stdout.write(f'Загрузка модели {model_name} завершена.')

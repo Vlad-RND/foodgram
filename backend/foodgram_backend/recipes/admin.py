@@ -33,22 +33,18 @@ class FoodgramUserAdmin(UserAdmin):
         'last_name',
         'is_superuser',
         'id',
-        'recipies',
-        'followers',
+        'get_recipies',
+        'get_followers',
     )
     search_fields = ('username', 'email',)
     list_filter = ('first_name', 'email',)
 
-    @admin.display(
-        description='Кол-во рецептов',
-    )
-    def recipies(self, obj):
+    @admin.display(description='Кол-во рецептов', )
+    def get_recipies(self, obj):
         return obj.recipes.count()
 
-    @admin.display(
-        description='Кол-во подписчиков',
-    )
-    def followers(self, obj):
+    @admin.display(description='Кол-во подписчиков', )
+    def get_followers(self, obj):
         return obj.author.count()
 
 
@@ -60,26 +56,26 @@ class Recipe(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
-        'favorites',
-        'ingredient',
+        'get_favorites',
+        'get_ingredient',
     )
     list_filter = ('author', 'tags',)
 
     @admin.display(
         description='В избранном',
     )
-    def favorites(self, obj):
+    def get_favorites(self, obj):
         """Получения количества добавлений в избранное."""
         return obj.favorites.count()
 
     @admin.display(
         description='Ингредиенты',
     )
-    def ingredient(self, obj):
+    def get_ingredient(self, obj):
         result = ''
         for i in obj.ingredient_recipe.all():
-            result += f'{i.ingredient.name} {i.amount} ' \
-                      f'{i.ingredient.measurement_unit}, '
+            result += (f'{i.ingredient.name} {i.amount} '
+                       f'{i.ingredient.measurement_unit}, ')
         return result[:-2]
 
     def image(self, obj):

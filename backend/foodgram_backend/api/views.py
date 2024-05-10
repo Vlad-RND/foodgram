@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.http import HttpResponse, FileResponse
 from django.db.models import Sum, Count
 from django_filters.rest_framework import DjangoFilterBackend
@@ -24,11 +26,11 @@ class FoodgramUserViewSet(UserViewSet):
 
     def get_permissions(self):
         if self.action == 'me':
-            self.permission_classes = (IsAuthenticated,)
+            return (IsAuthenticated(),)
         return super().get_permissions()
 
     @ action(
-        methods=['GET'],
+        methods=('GET', ),
         detail=False,
         permission_classes=(IsAuthenticated,)
     )
@@ -46,7 +48,7 @@ class FoodgramUserViewSet(UserViewSet):
         )
 
     @ action(
-        methods=['POST'],
+        methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
     )
@@ -59,26 +61,24 @@ class FoodgramUserViewSet(UserViewSet):
             data=data, context={'request': request, })
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=201)
+        return Response(serializer.data, status=HTTPStatus.CREATED)
 
     @ subscribe.mapping.delete
     def delete_subscribe(self, request, id):
-        if not Subscription.objects.filter(
+        subscription = Subscription.objects.filter(
             follower=self.request.user.id,
             author=id
-        ).exists():
-            return HttpResponse(status=400)
+        )
 
-        Subscription.objects.get(
-            follower=self.request.user.id,
-            author=id
-        ).delete()
+        if not subscription.exists():
+            return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
-        return HttpResponse(status=204)
+        subscription.delete()
+
+        return HttpResponse(status=HTTPStatus.NO_CONTENT)
 
 
-class TagViewSet(mixins.ListModelMixin,
-                 viewsets.GenericViewSet):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение информация о Тегах."""
 
     queryset = Tag.objects.all()
@@ -87,8 +87,7 @@ class TagViewSet(mixins.ListModelMixin,
     pagination_class = None
 
 
-class IngredientViewSet(mixins.ListModelMixin,
-                        viewsets.GenericViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение информация об Ингредиентах."""
 
     queryset = Ingredient.objects.all()
@@ -116,7 +115,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return CreateRecipeSerializer
 
     @staticmethod
-    def write(serializer_class, pk, request):
+    def write_object(serializer_class, pk, request):
         data = {
             'user': request.user.id,
             'recipe': pk
@@ -126,57 +125,53 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=201)
+        return Response(serializer.data, status=HTTPStatus.CREATED)
 
     @ action(
-        methods=['POST'],
+        methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
-        return self.write(FavoritesSerializer, pk, request)
+        return self.write_object(FavoritesSerializer, pk, request)
 
     @ favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        if not Favorites.objects.filter(
+        favorite = Favorites.objects.filter(
             user=self.request.user.id,
             recipe=pk
-        ).exists():
-            return HttpResponse(status=400)
+        )
+        if not favorite.exists():
+            return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
-        Favorites.objects.get(
-            user=self.request.user,
-            recipe=pk
-        ).delete()
+        favorite.delete()
 
-        return HttpResponse(status=204)
+        return HttpResponse(status=HTTPStatus.NO_CONTENT)
 
     @ action(
-        methods=['POST'],
+        methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
-        return self.write(ShoppingListSerializer, pk, request)
+        return self.write_object(ShoppingListSerializer, pk, request)
 
     @ shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
-        if not ShoppingList.objects.filter(
+        shopping_cart = ShoppingList.objects.filter(
             user=self.request.user.id,
             recipe=pk
-        ).exists():
+        )
+        if not shopping_cart.exists():
             return HttpResponse(status=400)
 
-        ShoppingList.objects.get(
-            user=self.request.user,
-            recipe=pk
-        ).delete()
+        shopping_cart.delete()
 
         return HttpResponse(status=204)
 
     @ action(
         detail=False,
-        methods=['GET'],
+        methods=('GET', ),
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
@@ -201,12 +196,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
             filename='shopping_list.txt',
             content_type='text/plain'
         )
-
-
-class SubscriptionViewSet(mixins.ListModelMixin,
-                          viewsets.GenericViewSet):
-    """Набор представлений Подписки."""
-
-    queryset = Subscription.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = GetSubscriptionSerializer
