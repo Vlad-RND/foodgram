@@ -95,7 +95,7 @@ class Ingredient(NameModel):
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit'),
                 name='unique_ingredient'
-            )
+            ),
         )
 
     def __str__(self):
@@ -143,7 +143,7 @@ class Recipe(NameModel):
             models.UniqueConstraint(
                 fields=('name', ),
                 name='unique_name'
-            )
+            ),
         )
 
     def __str__(self):
@@ -180,7 +180,7 @@ class IngredientRecipe(models.Model):
             models.UniqueConstraint(
                 fields=('ingredient', 'recipe'),
                 name='unique_ingredient_recipe'
-            )
+            ),
         )
 
     def __str__(self):
@@ -211,7 +211,7 @@ class Subscription(models.Model):
             models.UniqueConstraint(
                 fields=('follower', 'author'),
                 name='unique_subscription'
-            )
+            ),
         )
 
     def clean(self):
@@ -257,7 +257,7 @@ class Favorites(UserRecipeModel):
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='unique_favorites'
-            )
+            ),
         )
 
 
@@ -272,5 +272,5 @@ class ShoppingList(UserRecipeModel):
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='unique_shopping_list'
-            )
+            ),
         )
