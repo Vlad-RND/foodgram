@@ -29,7 +29,7 @@ class FoodgramUserViewSet(UserViewSet):
             return (IsAuthenticated(),)
         return super().get_permissions()
 
-    @ action(
+    @action(
         methods=('GET', ),
         detail=False,
         permission_classes=(IsAuthenticated,)
@@ -49,7 +49,7 @@ class FoodgramUserViewSet(UserViewSet):
             ).data
         )
 
-    @ action(
+    @action(
         methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
@@ -129,7 +129,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=HTTPStatus.CREATED)
 
-    @ action(
+    @action(
         methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
@@ -150,7 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return HttpResponse(status=HTTPStatus.NO_CONTENT)
 
-    @ action(
+    @action(
         methods=('POST', ),
         detail=True,
         permission_classes=(IsAuthenticated,)
@@ -165,13 +165,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe=pk
         )
         if not shopping_cart.exists():
-            return HttpResponse(status=400)
+            return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
         shopping_cart.delete()
 
-        return HttpResponse(status=204)
+        return HttpResponse(status=HTTPStatus.NO_CONTENT)
 
-    @ action(
+    @action(
         detail=False,
         methods=('GET', ),
         permission_classes=(IsAuthenticated,)

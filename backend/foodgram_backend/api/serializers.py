@@ -134,9 +134,13 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         read_only_fields = ('author',)
 
     def validate(self, data):
-        if 'ingredients' not in data or 'tags' not in data:
+        if 'ingredients' not in data:
             raise serializers.ValidationError(
-                {'ingredients': 'Отсутствует список ингредиентов или тегов.'}
+                {'ingredients': 'Отсутствует список ингредиентов.'}
+            )
+        if 'tags' not in data:
+            raise serializers.ValidationError(
+                {'tags': 'Отсутствует список тегов.'}
             )
 
         ingredient_list = [
@@ -144,7 +148,7 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         ]
         if not len(ingredient_list) == len(set(ingredient_list)):
             raise serializers.ValidationError(
-                {'ingredient': 'Этот ингредиент уже добавлен.'}
+                {'ingredients': 'Этот ингредиент уже добавлен.'}
             )
 
         tag_list = data['tags']
@@ -207,8 +211,10 @@ class GetSubscriptionSerializer(FoodgramUserSerializer):
 
     class Meta(FoodgramUserSerializer.Meta):
         model = FoodgramUser
-        fields = FoodgramUserSerializer.Meta.fields + \
-            ('recipes', 'recipes_count',)
+        fields = FoodgramUserSerializer.Meta.fields + (
+            'recipes',
+            'recipes_count',
+        )
 
     def get_recipes(self, obj):
         recipes = obj.recipes.all()
@@ -218,13 +224,11 @@ class GetSubscriptionSerializer(FoodgramUserSerializer):
             try:
                 recipes = recipes[:int(limit)]
             except ValueError:
-                raise serializers.ValidationError(
-                    {'limit': 'Должно быть число.'}
-                )
+                pass
         return ShortRecipeSerializer(
             recipes,
             many=True,
-            context={'request': request}
+            context=self.context
         ).data
 
 
@@ -238,7 +242,7 @@ class CreateSubscriptionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return GetSubscriptionSerializer(
             instance=instance.follower,
-            context={'request': self.context['request']}
+            context=self.context
         ).data
 
     def validate(self, data):
@@ -268,13 +272,14 @@ class FavoritesShoppingListSerializer(serializers.ModelSerializer):
     def validate(self, data):
         current_user_id = data['user'].id
         recipe_id = data['recipe'].id
+        model = self.Meta.model
 
-        if self.Meta.model.objects.filter(
+        if model.objects.filter(
             user=current_user_id,
             recipe=recipe_id
         ).exists():
             raise serializers.ValidationError(
-                {self.Meta.model._meta.verbose_name: 'Уже в списке.'}
+                {model._meta.verbose_name: f'Уже в {model._meta.verbose_name}'}
             )
 
         return data

@@ -91,12 +91,12 @@ class Ingredient(NameModel):
         verbose_name = 'ингридиент'
         verbose_name_plural = 'Ингридиенты'
 
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit'),
                 name='unique_ingredient'
             )
-        ]
+        )
 
     def __str__(self):
         return self.name[:SHORT_NAME_LEN]
@@ -139,12 +139,12 @@ class Recipe(NameModel):
         verbose_name_plural = 'Рецепты'
         ordering = ('-pub_date',)
         default_related_name = 'recipes'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('name', ),
                 name='unique_name'
             )
-        ]
+        )
 
     def __str__(self):
         return self.name[:SHORT_NAME_LEN]
@@ -176,12 +176,12 @@ class IngredientRecipe(models.Model):
     class Meta:
         verbose_name = 'ингридиент рецепта'
         verbose_name_plural = 'Ингридиенты рецептов'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('ingredient', 'recipe'),
                 name='unique_ingredient_recipe'
             )
-        ]
+        )
 
     def __str__(self):
         return f'{self.ingredient} {self.recipe}'
@@ -207,12 +207,12 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'подписка'
         verbose_name_plural = 'Подписки'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('follower', 'author'),
                 name='unique_subscription'
             )
-        ]
+        )
 
     def clean(self):
         if self.follower == self.author:
@@ -253,12 +253,12 @@ class Favorites(UserRecipeModel):
         verbose_name = 'избранное'
         verbose_name_plural = 'Избранные'
         default_related_name = 'favorites'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='unique_favorites'
             )
-        ]
+        )
 
 
 class ShoppingList(UserRecipeModel):
@@ -268,9 +268,9 @@ class ShoppingList(UserRecipeModel):
         verbose_name = 'список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_list'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='unique_shopping_list'
             )
-        ]
+        )
