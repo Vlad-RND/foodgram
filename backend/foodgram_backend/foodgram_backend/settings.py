@@ -11,8 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG_MODE')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
-ALLOWED_ORIGINS = ['http://*', 'https://*']
-CSRF_TRUSTED_ORIGINS = ALLOWED_ORIGINS.copy()
+CSRF_TRUSTED_ORIGINS = ['https://*.foodgram-vladrnd.myftp.org']
 
 
 INSTALLED_APPS = [
@@ -31,7 +30,7 @@ INSTALLED_APPS = [
     'colorfield',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
