@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG_MODE')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
-CSRF_TRUSTED_ORIGINS = ['https://*.foodgram-vladrnd.myftp.org']
+# CSRF_TRUSTED_ORIGINS = ['https://*.foodgram-vladrnd.myftp.org']
 
 
 INSTALLED_APPS = [
