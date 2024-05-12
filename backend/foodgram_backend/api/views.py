@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from django.http import HttpResponse, FileResponse
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import viewsets
@@ -65,7 +65,7 @@ class FoodgramUserViewSet(UserViewSet):
         serializer.save()
         return Response(serializer.data, status=HTTPStatus.CREATED)
 
-    @ subscribe.mapping.delete
+    @subscribe.mapping.delete
     def delete_subscribe(self, request, id):
         subscription = Subscription.objects.filter(
             follower=self.request.user.id,
@@ -137,7 +137,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         return self.write_object(FavoritesSerializer, pk, request)
 
-    @ favorite.mapping.delete
+    @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         favorite = Favorites.objects.filter(
             user=self.request.user.id,
@@ -158,7 +158,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         return self.write_object(ShoppingListSerializer, pk, request)
 
-    @ shopping_cart.mapping.delete
+    @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         shopping_cart = ShoppingList.objects.filter(
             user=self.request.user.id,
@@ -182,15 +182,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         data = IngredientRecipe.objects.filter(
             recipe__shopping_list__user=request.user
         ).values(
-            'ingredient__name', 'ingredient__measurement_unit'
+            name=F('ingredient__name'), unit=F('ingredient__measurement_unit')
         ).annotate(
             amount=Sum('amount')
         ).order_by('ingredient__name')
 
         answer = ''
         for item in data:
-            name, unit, amount = item.values()
-            answer += f'{name}, {unit}: {amount}\n'
+            answer += f'{item["name"]}, {item["unit"]}: {item["amount"]}\n'
 
         return FileResponse(
             answer,

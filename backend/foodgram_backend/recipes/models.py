@@ -249,7 +249,7 @@ class UserRecipeModel(models.Model):
 class Favorites(UserRecipeModel):
     """Модель списка избранного."""
 
-    class Meta:
+    class Meta(UserRecipeModel.Meta):
         verbose_name = 'избранное'
         verbose_name_plural = 'Избранные'
         default_related_name = 'favorites'
@@ -264,7 +264,7 @@ class Favorites(UserRecipeModel):
 class ShoppingList(UserRecipeModel):
     """Модель списка покупок."""
 
-    class Meta:
+    class Meta(UserRecipeModel.Meta):
         verbose_name = 'список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_list'
