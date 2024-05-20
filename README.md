@@ -7,7 +7,11 @@
 Бэкенд реализован с помощью Django и DRF (Api).
 Фронтенд реализован с помощью React.
 Проект упакован в контейнеры и настроен CI/CD.
-Адрес сайта - https://foodgram-vladrnd.myftp.org/recipes.
+
+#### Адрес сайта: 
+```
+https://foodgram-vladrnd.myftp.org/recipes.
+```
 
 ### Используемые библиотеки:
 asgiref==3.8.1, certifi==2024.2.2, cffi==1.16.0, charset-normalizer==3.3.2, 
@@ -30,6 +34,7 @@ cd foodgram
 ```
 
 ### Создать в директории проекта и заполнить .env:
+```
 POSTGRES_DB=***
 POSTGRES_USER=***
 POSTGRES_PASSWORD=***
@@ -38,6 +43,7 @@ DB_PORT=***
 SECRET_KEY=***
 ALLOWED_HOSTS=***
 DEBUG_MODE=***
+```
 
 ### Подтянуть последнюю версию проекта:
 ```
