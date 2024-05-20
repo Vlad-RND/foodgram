@@ -1,8 +1,13 @@
 # Проект Foodgram
-[![Main Foodgram workflow](https://github.com/Vlad-RND/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Vlad-RND/foodgram-project-react/actions/workflows/main.yml)
+[![Main Foodgram workflow](https://github.com/Vlad-RND/foodgram/actions/workflows/main.yml/badge.svg)](https://github.com/Vlad-RND/foodgram/actions/workflows/main.yml)
 
 ### Описание проекта:
-
+Проект Foodgram - сайт для публикации рецептов. В проекте равлизована регистрация, подписки,
+избранное рецептов и формирование списка покупок.
+Бэкенд реализован с помощью Django и DRF (Api).
+Фронтенд реализован с помощью React.
+Проект упакован в контейнеры и настроен CI/CD.
+Адрес сайта - https://foodgram-vladrnd.myftp.org/recipes.
 
 ### Используемые библиотеки:
 asgiref==3.8.1, certifi==2024.2.2, cffi==1.16.0, charset-normalizer==3.3.2, 
@@ -18,10 +23,10 @@ social-auth-core==4.5.3, sqlparse==0.4.4, tzdata==2024.1, urllib3==2.2.1, webcol
 ### Как запустить проект:
 Клонировать репозиторий и перейти в него в командной строке:
 ```
-git clone https://github.com/Vlad-RND/foodgram-project-react.git
+git clone https://github.com/Vlad-RND/foodgram.git
 ```
 ```
-cd foodgram-project-react
+cd foodgram
 ```
 
 ### Создать в директории проекта и заполнить .env:
@@ -56,5 +61,13 @@ docker compose -f docker-compose.production.yml exec backend python manage.py co
 ```
 docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
 ```
+
+### Функционал:
+- Регистрация;
+- Создание/редактирование/удаление рецепта с фото, категориями и ингредиентами;
+- Подписка на автором рецептов;
+- Добавление рецептов в избранное;
+- Создание/редактирование и скачивание списка покупок;
+- Реализован широкий функционал админ-панели django.
 
 Автор - Vlad-RND, GIT - https://github.com/Vlad-RND

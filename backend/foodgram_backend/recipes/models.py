@@ -256,6 +256,7 @@ class Favorites(UserRecipeModel):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
+                # '%(class)s_model'
                 name='unique_favorites'
             ),
         )

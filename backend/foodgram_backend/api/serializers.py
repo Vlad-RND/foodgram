@@ -156,7 +156,7 @@ class CreateRecipeSerializer(CommonRecipeSerializer):
         ]
         if not len(ingredient_list) == len(set(ingredient_list)):
             raise serializers.ValidationError(
-                {'ingredients': 'Этот ингредиент уже добавлен.'}
+                {'ingredient': 'Этот ингредиент уже добавлен.'}
             )
 
         tag_list = data['tags']
